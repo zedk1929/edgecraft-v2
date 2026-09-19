@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive valuation and sports-betting decision lab.">
+  <meta name="theme-color" content="#09100f">
+  <title>Edgecraft — Quant Valuation & Betting Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23b9ff66'/%3E%3Cpath d='M19 16h29v9H29v6h16v8H29v7h20v9H19z' fill='%2309100f'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Edgecraft home">
+      <span class="brand-mark" aria-hidden="true">E</span>
+      <span>EDGECRAFT</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#valuation">Valuation</a>
+      <a href="#betting">Bet lab</a>
+      <a href="#method">Method</a>
+    </nav>
+    <button class="icon-button" id="themeToggle" type="button" aria-label="Switch color theme">
+      <span aria-hidden="true" id="themeIcon">☼</span>
+    </button>
+  </header>
+
+  <main id="top">
+    <section class="hero reveal">
+      <div class="eyebrow"><span class="pulse"></span> Decision models, not vibes</div>
+      <h1>Find the edge.<br><span>Size the risk.</span></h1>
+      <p class="hero-copy">A browser-native lab for pressure-testing a stock thesis and sizing a wager with the same discipline: assumptions in, distributions out.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#valuation">Value a company <span aria-hidden="true">↗</span></a>
+        <a class="button secondary" href="#betting">Price a bet</a>
+      </div>
+      <div class="ticker" aria-label="Core principles">
+        <span>01 / EXPECTED VALUE</span><i></i><span>02 / SENSITIVITY</span><i></i><span>03 / POSITION SIZING</span><i></i><span>04 / REPEATABILITY</span>
+      </div>
+    </section>
+
+    <section class="lab-section reveal" id="valuation">
+      <div class="section-heading">
+        <div><span class="section-index">01</span><p class="kicker">Equity lab</p></div>
+        <div>
+          <h2>Scenario valuation</h2>
+          <p>Project operating value, then stress-test what actually matters.</p>
+        </div>
+      </div>
+
+      <div class="lab-shell">
+        <aside class="controls" aria-label="Valuation assumptions">
+          <div class="panel-title">
+            <span>Assumptions</span>
+            <button class="text-button" id="resetValuation" type="button">Reset</button>
+          </div>
+
+          <label class="control">
+            <span>Current share price <output id="priceOut">$42.00</output></span>
+            <input id="price" type="range" min="5" max="200" step="1" value="42">
+          </label>
+          <label class="control">
+            <span>Revenue, TTM <output id="revenueOut">$1.20B</output></span>
+            <input id="revenue" type="range" min="100" max="10000" step="50" value="1200">
+          </label>
+          <label class="control">
+            <span>Revenue growth <output id="growthOut">18%</output></span>
+            <input id="growth" type="range" min="-10" max="60" step="1" value="18">
+          </label>
+          <label class="control">
+            <span>Free-cash-flow margin <output id="marginOut">22%</output></span>
+            <input id="margin" type="range" min="-5" max="50" step="1" value="22">
+          </label>
+          <label class="control">
+            <span>Terminal FCF multiple <output id="multipleOut">24×</output></span>
+            <input id="multiple" type="range" min="8" max="45" step="1" value="24">
+          </label>
+          <label class="control">
+            <span>Discount rate <output id="discountOut">10%</output></span>
+            <input id="discount" type="range" min="5" max="20" step="0.5" value="10">
+          </label>
+          <label class="control">
+            <span>Shares outstanding <output id="sharesOut">120M</output></span>
+            <input id="shares" type="range" min="10" max="1000" step="5" value="120">
+          </label>
+          <div class="preset-row" aria-label="Valuation presets">
+            <button type="button" data-val-preset="bear">Bear case</button>
+            <button type="button" data-val-preset="base">Base case</button>
+            <button type="button" data-val-preset="bull">Bull case</button>
+          </div>
+        </aside>
+
+        <div class="results" aria-live="polite">
+          <div class="metric-grid">
+            <article class="metric hero-metric">
+              <span>Modeled fair value</span>
+              <strong id="fairValue">$73.04</strong>
+              <small id="valueDelta" class="positive">+73.9% vs. price</small>
+            </article>
+            <article class="metric">
+              <span>Modeled equity value</span>
+              <strong id="marketCap">$8.77B</strong>
+              <small>Present value of terminal</small>
+            </article>
+            <article class="metric">
+              <span>5Y revenue</span>
+              <strong id="futureRevenue">$2.75B</strong>
+              <small id="revenueCagr">18.0% CAGR</small>
+            </article>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-title"><span>Revenue → free cash flow</span><span class="legend"><i></i> Revenue <i></i> FCF</span></div>
+            <div class="bar-chart" id="valuationChart" role="img" aria-label="Five-year revenue and free cash flow projection"></div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-title"><span>Fair-value sensitivity</span><span class="muted">Growth × terminal multiple</span></div>
+            <div class="heatmap-wrap">
+              <div class="heatmap" id="heatmap" role="grid" aria-label="Fair value sensitivity by growth and terminal multiple"></div>
+            </div>
+            <div class="heat-legend"><span>Below market</span><span>Near market</span><span>Above market</span></div>
+          </div>
+
+          <div class="decision-strip">
+            <span class="decision-dot" id="valuationDot"></span>
+            <div><small>Scenario read</small><strong id="valuationRead">Upside under this assumption set.</strong></div>
+            <button id="copyValuation" class="text-button" type="button">Copy thesis</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-section reveal" id="betting">
+      <div class="section-heading">
+        <div><span class="section-index">02</span><p class="kicker">Probability lab</p></div>
+        <div>
+          <h2>Bet pricing & sizing</h2>
+          <p>Separate a good prediction from a good price—and avoid betting the whole thesis.</p>
+        </div>
+      </div>
+
+      <div class="lab-shell reverse">
+        <aside class="controls" aria-label="Bet assumptions">
+          <div class="panel-title">
+            <span>Ticket</span>
+            <button class="text-button" id="resetBet" type="button">Reset</button>
+          </div>
+
+          <label class="field">
+            <span>American odds</span>
+            <input id="odds" type="number" value="-110" step="5" aria-describedby="oddsHint">
+            <small id="oddsHint">Use −110 or +150 format</small>
+          </label>
+          <label class="control">
+            <span>Your win probability <output id="probabilityOut">57%</output></span>
+            <input id="probability" type="range" min="5" max="95" step="1" value="57">
+          </label>
+          <label class="field">
+            <span>Bankroll</span>
+            <div class="input-prefix"><span>$</span><input id="bankroll" type="number" min="10" value="1000" step="50"></div>
+          </label>
+          <label class="control">
+            <span>Kelly fraction <output id="kellyFractionOut">¼ Kelly</output></span>
+            <input id="kellyFraction" type="range" min="0" max="1" step="0.25" value="0.25">
+          </label>
+
+          <div class="preset-row" aria-label="Bet presets">
+            <button type="button" data-preset="coin">Coin flip</button>
+            <button type="button" data-preset="dog">Value dog</button>
+            <button type="button" data-preset="favorite">Strong favorite</button>
+          </div>
+        </aside>
+
+        <div class="results" aria-live="polite">
+          <div class="metric-grid bet-metrics">
+            <article class="metric hero-metric">
+              <span>Suggested stake</span>
+              <strong id="stake">$35.75</strong>
+              <small id="stakePct">3.6% of bankroll</small>
+            </article>
+            <article class="metric">
+              <span>Expected value / $100</span>
+              <strong id="expectedValue">+$8.82</strong>
+              <small id="edgeLabel" class="positive">4.6 pt edge</small>
+            </article>
+            <article class="metric">
+              <span>Market probability</span>
+              <strong id="marketProbability">52.4%</strong>
+              <small id="fairOdds">Your fair line: −133</small>
+            </article>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-title"><span>100-bet bankroll simulation</span><span class="legend"><i></i> Middle 50% <i></i> Median</span></div>
+            <div class="simulation" id="simulation" role="img" aria-label="Projected bankroll distribution across one hundred bets"></div>
+            <div class="simulation-stats">
+              <span><small>Median finish</small><b id="medianFinish">$1,502</b></span>
+              <span><small>Chance of profit</small><b id="profitChance">77%</b></span>
+              <span><small>Risk of 50% drawdown</small><b id="drawdownRisk">2%</b></span>
+            </div>
+          </div>
+
+          <div class="decision-strip" id="decisionStrip">
+            <span class="decision-dot"></span>
+            <div><small>Model read</small><strong id="decisionText">Positive edge. Size modestly.</strong></div>
+            <button id="copySnapshot" class="text-button" type="button">Copy snapshot</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="method reveal" id="method">
+      <div class="section-heading compact">
+        <div><span class="section-index">03</span><p class="kicker">The operating system</p></div>
+        <div><h2>Same logic. Different arena.</h2></div>
+      </div>
+      <div class="method-grid">
+        <article><span>01</span><h3>Price the future</h3><p>Translate assumptions into a fair price or fair probability.</p></article>
+        <article><span>02</span><h3>Stress the inputs</h3><p>Find the variables that can break your thesis before capital does.</p></article>
+        <article><span>03</span><h3>Size, then survive</h3><p>A repeatable edge only compounds if one bad outcome cannot end the game.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="brand"><span class="brand-mark" aria-hidden="true">E</span><span>EDGECRAFT</span></div>
+    <p>Educational models, not financial or gambling advice.</p>
+    <a href="#top">Back to top ↑</a>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+  <script src="app.js"></script>
+</body>
+</html>
